@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Text Editor</title>
+    <meta name="description" content="A simple JavaScript runner and editor"/>
+    <meta name="keywords" content="javascript,editor,runner"/>
+    <meta name="theme-color" content="#f5f5f5"/>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=3"/>
+    <meta name="author" content="HJCD studios"/>
+    <style type="text/css">
+      .customBtn {
+        background-color: black;
+        color: orange;
+        border-width: 1px;
+        border-color: orange;
+      }
+    </style>
+  </head>
+  <body onload="OnStart()" style="margin:0;background-color:black">
+    <main>
+      <button class="customBtn" onclick="editor.contentWindow.openFile()">Open File</button>
+      <button class="customBtn" onclick="editor.contentWindow.downloadFile()">Download</button>
+      <iframe id="editor" src="editor.html" style="width:100%;height:90vh;border:0"></iframe>
+    </main>
+    <script type="text/javascript">
+    function OnStart() {
+      
+    }
+    </script>
+  </body>
+</html>

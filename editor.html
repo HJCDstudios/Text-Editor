@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=3"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>Editor</title>
+    <style type="text/css" media="screen">
+    body {
+        overflow: hidden;
+    }
+
+    #editor {
+        margin: 0;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+    </style>
+  </head>
+  <body onload="OnStart()">
+    <input type="file" id="FileFile" onchange="LoadFile(this.files[0])"/>
+    <pre id="editor">function foo() {
+  alert("Hello, World");
+}
+foo();</pre>
+    <script src="../ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+    var editor = null;
+    var config = {
+      "FileName":"",
+      "Text":"",
+      "Theme":"ace/theme/twilight",
+      "SupportedFiles":{
+        "js":"ace/mode/javascript",
+        "htm":"ace/mode/html",
+        "html":"ace/mode/html",
+        "css":"ace/mode/css",
+        "php":"ace/mode/php",
+        "rb":"ace/mode/ruby",
+        "py":"ace/mode/python",
+        "txt":""
+      }
+    };
+    function OnStart() {
+      editor = ace.edit("editor");
+      editor.setTheme(config.Theme);
+      editor.session.setMode(config.Mode);
+      editor.session.setUseWrapMode(config.WrapText);
+      editor.session.setTabSize(config.TabSize);
+      editor.session.setUseSoftTabs(config.UseSoftTabs);
+      editor.setValue(config.Text);
+    }
+    function openFile() {
+      FileFile.click();
+    }
+    function LoadFile(file) {
+      if (!config.SupportedFiles.hasOwnProperty(file.name.slice(file.name.length,file.name.indexOf(".")+1))) return alert("The file extension is not recognized");
+      config.FileName = file.name;
+      var fileReader = new FileReader();
+      fileReader.onload = function(e) {
+        SaveConfig();
+        editor.setValue(e.target.result);
+      }
+      fileReader.readAsText(file);
+    }
+    function downloadFile() {
+      SaveConfig();
+      var filename = prompt("Enter a file name",config.FileName);
+      if (!filename) return;
+      var element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(editor.getValue()));
+      element.setAttribute('download', filename);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+    function SaveConfig() {
+      config.Text = editor.getValue();
+      localStorage.setItem("Config",JSON.stringify(config));
+    }
+    </script>
+  </body>
+</html>
