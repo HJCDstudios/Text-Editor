@@ -31,8 +31,9 @@ foo();</pre>
     var editor = null;
     var config = {
       "FileName":"",
-      "Text":"",
+      "Text":"function foo() {\n  alert(\"Hello, World\");\n}\nfoo();",
       "Theme":"ace/theme/twilight",
+      "Mode":"ace/mode/javascript",
       "SupportedFiles":{
         "js":"ace/mode/javascript",
         "htm":"ace/mode/html",
@@ -41,6 +42,10 @@ foo();</pre>
         "php":"ace/mode/php",
         "rb":"ace/mode/ruby",
         "py":"ace/mode/python",
+        "c":"ace/mode/c_cpp",
+        "cpp":"ace/mode/c_cpp",
+        "cxx":"ace/mode/c_cpp",
+        "ts":"ace/mode/typescript",
         "txt":""
       }
     };
@@ -57,14 +62,17 @@ foo();</pre>
       FileFile.click();
     }
     function LoadFile(file) {
-      var ext = file.name.slice(file.name.lastIndexOf(".")+1,file.name.length);
-      alert(ext);
-      if (!config.SupportedFiles.hasOwnProperty(ext)) return alert("The file extension is not recognized");
+      var ext = file.name.slice(file.name.lastIndexOf(".")+1,file.name.length).toLowerCase();
+      if (!config.SupportedFiles.hasOwnProperty(ext)) return alert("The file extension \""+ext+"\" is not recognized");
       config.FileName = file.name;
       var fileReader = new FileReader();
       fileReader.onload = function(e) {
         SaveConfig();
-        editor.setTheme(SupportedFiles[ext]);
+        var mode = config.SupportedFiles[ext];
+        if (config.Mode != mode) {
+          config.Mode = mode;
+          editor.session.setMode(mode);
+        }
         editor.setValue(e.target.result);
       }
       fileReader.readAsText(file);
