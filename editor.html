@@ -57,11 +57,14 @@ foo();</pre>
       FileFile.click();
     }
     function LoadFile(file) {
-      if (!config.SupportedFiles.hasOwnProperty(file.name.slice(file.name.length,file.name.indexOf(".")+1))) return alert("The file extension is not recognized");
+      var ext = file.name.slice(file.name.lastIndexOf(".")+1,file.name.length);
+      alert(ext);
+      if (!config.SupportedFiles.hasOwnProperty(ext)) return alert("The file extension is not recognized");
       config.FileName = file.name;
       var fileReader = new FileReader();
       fileReader.onload = function(e) {
         SaveConfig();
+        editor.setTheme(SupportedFiles[ext]);
         editor.setValue(e.target.result);
       }
       fileReader.readAsText(file);
