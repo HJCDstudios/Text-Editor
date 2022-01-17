@@ -20,12 +20,9 @@
     }
     </style>
   </head>
-  <body onload="OnStart()">
+  <body>
     <input type="file" id="FileFile" onchange="LoadFile(this.files[0])"/>
-    <pre id="editor">function foo() {
-  alert("Hello, World");
-}
-foo();</pre>
+    <div id="editor"></div>
     <script src="../ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript">
     var editor = null;
@@ -34,6 +31,9 @@ foo();</pre>
       "Text":"function foo() {\n  alert(\"Hello, World\");\n}\nfoo();",
       "Theme":"ace/theme/twilight",
       "Mode":"ace/mode/javascript",
+      "TabSize":2,
+      "WrapText":false,
+      "UseSoftTabs":true,
       "SupportedFiles":{
         "js":"ace/mode/javascript",
         "htm":"ace/mode/html",
@@ -46,7 +46,10 @@ foo();</pre>
         "cpp":"ace/mode/c_cpp",
         "cxx":"ace/mode/c_cpp",
         "ts":"ace/mode/typescript",
-        "txt":""
+        "txt":"",
+        "json":"ace/mode/json",
+        "java":"ace/mode/java",
+        "xml":"ace/mode/xml"
       }
     };
     function OnStart() {
@@ -58,8 +61,13 @@ foo();</pre>
       editor.session.setUseSoftTabs(config.UseSoftTabs);
       editor.setValue(config.Text);
     }
-    function openFile() {
+    function OpenFile() {
       FileFile.click();
+    }
+    function SetTheme(theme) {
+      config.Theme = theme;
+      editor.setTheme(theme);
+      SaveConfig();
     }
     function LoadFile(file) {
       var ext = file.name.slice(file.name.lastIndexOf(".")+1,file.name.length).toLowerCase();
@@ -67,17 +75,28 @@ foo();</pre>
       config.FileName = file.name;
       var fileReader = new FileReader();
       fileReader.onload = function(e) {
-        SaveConfig();
         var mode = config.SupportedFiles[ext];
         if (config.Mode != mode) {
           config.Mode = mode;
           editor.session.setMode(mode);
         }
+        SaveConfig();
         editor.setValue(e.target.result);
       }
       fileReader.readAsText(file);
     }
-    function downloadFile() {
+    function LoadFileText(text,filename) {
+      var ext = file.name.slice(file.name.lastIndexOf(".")+1,file.name.length).toLowerCase();
+      if (!config.SupportedFiles.hasOwnProperty(ext)) return alert("The file extension \""+ext+"\" is not recognized");
+      config.FileName = file.name;
+      config.Text = text;
+      var mode = config.SupportedFiles[ext];
+      config.Mode = mode;
+      editor.session.setMode(mode);
+      editor.setValue(text);
+      SaveConfig();
+    }
+    function DownloadFile() {
       SaveConfig();
       var filename = prompt("Enter a file name",config.FileName);
       if (!filename) return;
@@ -92,6 +111,14 @@ foo();</pre>
     function SaveConfig() {
       config.Text = editor.getValue();
       localStorage.setItem("Config",JSON.stringify(config));
+    }
+    function Undo() {
+      editor.undo();
+      config.Text = editor.getValue();
+    }
+    function Redo() {
+      editor.redo();
+      config.Text = editor.getValue();
     }
     </script>
   </body>
